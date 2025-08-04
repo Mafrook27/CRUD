@@ -1,20 +1,30 @@
-import { useState } from "react";
-import EmpTable from "./Components/EmpTable";
+import { Suspense, lazy } from "react";
 
-
+import Loader from "./Components/Loader";
+import Signup from "./Components/Signup";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+const UserTable = lazy(() => import("./Components/UserTable"));
+const Login = lazy(()=>import("./Components/Login"));
 function App() {
-  
   return (
-    <div className="App">
-      <div className="container my-4">
-        <h1 className="text-center text-primary border-bottom pb-2">Home</h1>
-        <h4 className="text-center text-info mb-4 border-bottom pb-2">Employee</h4>
-
-       
-
-        <EmpTable/>
+    <>
+      <div className="App">
+        <Router>
+          <div>
+          <Suspense fallback={<Loader/>}>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/" element={<Login />} />
+              <Route path="/UserTable" element={<UserTable />} />
+            </Routes>
+          </Suspense>
+        </div>
+        </Router>
       </div>
-    </div>
+    </>
   );
 }
 
