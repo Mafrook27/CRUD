@@ -1,374 +1,409 @@
 import { useState, useEffect } from 'react';
-import './UserTable.css'; // Ensure this file exists or remove if not needed
-import axios from 'axios';
-import {
-  Navbar,
-  Container,
-  Nav,
-  Button
-} from 'react-bootstrap';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { useMediaQuery } from '@mui/material';
 import {
   Typography,
   Box,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  TableContainer,
-  TablePagination,
+  Container,
+  TextField,
+  Collapse,
+  Button,
   Stack,
-  Alert // Optional: for error messages
+  TablePagination,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
 
+import { fetchPosts, createPost, updatePost, deletePostAPI } from '../Services/Service';
+import Cards from './Cards';
+import TableComponent from './TableComponent';
+import { setShowForm } from '../Redux/actions';
+
+const demoData = [
+  { name: 'xyz', salary: 42000, performance: 72 },
+  { name: 'abcd', salary: 31000, performance: 49 },
+  { name: 'Rao', salary: 28000, performance: 42 },
+];
+
+
+
+
+
 const UserTable = () => {
+  const dispatch = useDispatch();
+  const showForm = useSelector((state) => state.post.showForm);
+const isMobile = useMediaQuery('(max-width:600px)');
   const [posts, setPosts] = useState([]);
-  const [showForm, setShowForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    userId: 1,
+    id: null,
+    title: '',
+    body: '',
+  });
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [error, setError] = useState(null); 
+  const [loading, setLoading] = useState(false);
+  const [count, setCount] = useState(0);
 
-  
-  const [formData, setFormData] = useState({ userId: 1, id: null, title: '', body: '' });
+  // State for alert dialog
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertTitle, setAlertTitle] = useState('');
 
-  // GET Request
-  const fetchPosts = async () => {
-    setError(null); 
-    try {
-     
-      const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
-      console.log("Fetched posts:", response.data);
-      
-      setPosts(response.data);
-    } catch (err) {
-      console.error('Axios GET Error:', err.message);
-      setError('Failed to fetch posts.');
-      if (err.response) {
-        console.error('Error Data:', err.response.data);
-        console.error('Error Status:', err.response.status);
-      } else if (err.request) {
-        console.error('No response received:', err.request);
-      } else {
-        console.error('Error setting up request:', err.message);
-      }
-    }
-  };
+  // State for delete confirmation dialog
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [postIdToDelete, setPostIdToDelete] = useState(null);
 
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    const loadPosts = async () => {
+      setLoading(true);
+      try {
+        const { data, count } = await fetchPosts(page, rowsPerPage);
+        setPosts(data);
+        setCount(count);
+      } catch (err) {
+        setPosts([]);
+        console.error('Failed to load posts:', err);
+        setAlertTitle('Error');
+        setAlertMessage('Failed to load posts. Please try again.');
+        setAlertOpen(true);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const getNextId = () => {
-    if (posts.length === 0) return 1;
-
-    return Math.max(...posts.map((post) => post.id)) + 1;
-  };
+    loadPosts();
+  }, [page, rowsPerPage]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // POST Request
-  const createPost = async (postData) => {
-    try {
-     
-      const response = await axios.post('https://jsonplaceholder.typicode.com/posts', postData);
-      return response.data;
-    } catch (err) {
-      console.error('Axios POST Error:', err.message);
-      setError('Failed to create post.');
-      if (err.response) {
-        console.error('Error Data:', err.response.data);
-        console.error('Error Status:', err.response.status);
-      }
-      throw err; 
-    }
-  };
-
-  // PUT Request
-  const updatePost = async (id, postData) => {
-    try {
-   
-      const response = await axios.put(`https://jsonplaceholder.typicode.com/posts/${id}`, postData);
-      return response.data;
-    } catch (err) {
-      console.error('Axios PUT Error:', err.message);
-      setError('Failed to update post.');
-      if (err.response) {
-        console.error('Error Data:', err.response.data);
-        console.error('Error Status:', err.response.status);
-      }
-      throw err; 
-    }
-  };
-
-  // DELETE Request
-  const deletePostAPI = async (id) => {
-    try {
-      
-      await axios.delete(`https://jsonplaceholder.typicode.com/posts/${id}`);
-    } catch (err) {
-      console.error('Axios DELETE Error:', err.message);
-      setError('Failed to delete post.');
-      if (err.response) {
-        console.error('Error Status:', err.response.status);
-      }
-      throw err; 
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null); 
+    if (!formData.title.trim() || !formData.body.trim()) {
+      setAlertTitle('Validation Error');
+      setAlertMessage('Title and Body are required!');
+      setAlertOpen(true);
+      return;
+    }
+
     try {
-      let newOrUpdatedPost;
+      let result;
       if (isEditing) {
-        
-        newOrUpdatedPost = await updatePost(formData.id, formData);
-        
-        setPosts(posts.map((post) => (post.id === formData.id ? newOrUpdatedPost : post)));
+        result = await updatePost(formData.id, formData);
+        setPosts(posts.map((post) => (post.id === formData.id ? result : post)));
         setIsEditing(false);
+        setAlertTitle('Success');
+        setAlertMessage('Post updated successfully!');
       } else {
-       
-        const postDataToSend = { ...formData, id: getNextId() };
-        
-        newOrUpdatedPost = await createPost(postDataToSend);
-       
-        setPosts([...posts, newOrUpdatedPost]);
+        result = await createPost(formData);
+        setPosts([result, ...posts]);
+        setAlertTitle('Success');
+        setAlertMessage('Post created successfully!');
       }
 
-      // Reset form
       setFormData({ userId: 1, id: null, title: '', body: '' });
-      setShowForm(false);
+      dispatch(setShowForm(false));
+      setAlertOpen(true);
     } catch (err) {
-      console.error('Error submitting form:', err);
-      
+      console.error('Submission failed:', err);
+      setAlertTitle('Error');
+      setAlertMessage('Failed to submit post. Please try again.');
+      setAlertOpen(true);
     }
   };
 
   const handleEdit = (post) => {
-
     setFormData({
-      userId: post.userId || 1, 
+      userId: post.userId || 1,
       id: post.id,
       title: post.title,
       body: post.body,
     });
     setIsEditing(true);
-    setShowForm(true);
+    dispatch(setShowForm(true));
   };
 
-  const handleDelete = async (id) => {
-    setError(null); // Clear previous errors
+  const handleDelete = async () => {
     try {
-      await deletePostAPI(id);
-      
-      setPosts(posts.filter((post) => post.id !== id));
+      await deletePostAPI(postIdToDelete);
+      setPosts(posts.filter((post) => post.id !== postIdToDelete));
+      setAlertTitle('Success');
+      setAlertMessage('Post deleted successfully!');
+      setAlertOpen(true);
     } catch (err) {
-      console.error('Error deleting post:', err);
-      
+      console.error('Delete failed:', err);
+      setAlertTitle('Error');
+      setAlertMessage('Failed to delete post.');
+      setAlertOpen(true);
+    } finally {
+      setConfirmDeleteOpen(false);
+      setPostIdToDelete(null);
     }
   };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+  const handleOpenDeleteConfirm = (id) => {
+    setPostIdToDelete(id);
+    setConfirmDeleteOpen(true);
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
 
-  // Pagination logic
-  const paginatedPosts = posts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  useEffect(() => {
+    if (!showForm) {
+      setFormData({ userId: 1, id: null, title: '', body: '' });
+      setIsEditing(false);
+    }
+  }, [showForm]);
+
+  // Table configuration
+  const headers = [
+    { key: 'id', label: 'ID' },
+    { key: 'title', label: 'Title' },
+    { key: 'body', label: 'Body' },
+  ];
+
+  const renderActions = (post) => (
+    <Stack direction="row" spacing={1}>
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={() => handleEdit(post)}
+      >
+        Edit
+      </Button>
+      <Button
+        variant="outlined"
+        size="small"
+        color="error"
+        onClick={() => handleOpenDeleteConfirm(post.id)}
+      >
+        Delete
+      </Button>
+    </Stack>
+  );
+
+
 
   return (
-    <>
-      {/* Navbar */}
-      <Navbar
-        bg="light"
-        expand="lg"
-        className='p-3'
-        style={{
-          borderBottom: '1px solid #ddd',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-          flexDirection: 'column',
-          alignItems: 'stretch',
-        }}
+
+    <Container sx={{ py: 4 }}>
+      <Typography variant="h6" gutterBottom>
+        Users List
+      </Typography>
+
+      <Collapse in={showForm} timeout="auto" unmountOnExit>
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            maxWidth: '50vw',
+            p: 2,
+            border: '1px solid #ccc',
+            borderRadius: 1,
+            backgroundColor: '#f9f9f9',
+            mx: 'auto',
+            mb: 3,
+          }}
+        >
+          <TextField
+            fullWidth
+            label="Title"
+            name="title"
+            value={formData.title}
+            onChange={handleInputChange}
+            margin="normal"
+            size="small"
+            required
+          />
+          <TextField
+            fullWidth
+            label="Body"
+            name="body"
+            value={formData.body}
+            onChange={handleInputChange}
+            multiline
+            rows={3}
+            margin="normal"
+            size="small"
+            required
+          />
+        <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 1 }}>
+      <Button
+        type="submit"
+        fullWidth={false}
+        variant="contained"
+        color="secondary"
+        size="small"
       >
-        <Container style={{ width: '100%' }}>
-          <Navbar.Brand href="#home" className="text-dark fw-semibold">
-            Users Dashboard
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto" style={{ alignItems: 'center' }}>
-              <Button
-                className="add-user-btn"
-                onClick={() => {
-                   // Reset form state when opening/closing
-                   if (!showForm) {
-                      setFormData({ userId: 1, id: null, title: '', body: '' });
-                      setIsEditing(false);
-                   }
-                   setShowForm((prev) => !prev);
-                }}
-              >
-                {showForm ? 'Cancel' : '+ Add New User'}
-              </Button>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
+        {isEditing ? 'Update' : 'Create'}
+      </Button>
+      <Button
+        variant="outlined"
+        color="primary"
+        size="small"
+        onClick={() => dispatch(setShowForm(false))}
+      >
+        Cancel
+      </Button>
+    </Box>
+        </Box>
+      </Collapse>
 
-        {/* Optional Error Alert */}
-        {error && (
-          <Container className="mt-2">
-            <Alert severity="error" onClose={() => setError(null)}>{error}</Alert>
-          </Container>
-        )}
+      <Box sx={{ mt: 3 }}>
+        <TableComponent
+          headers={headers}
+          data={posts}
+          loading={loading}
+          noDataMessage="No posts found."
+          renderActions={renderActions}
+        />
 
-        {/* Form inside Navbar - Only show if showForm is true */}
-        {showForm && (
-          <Container
-            fluid
-            style={{
-              maxWidth: '700px',
-              padding: '20px',
-              marginTop: '10px',
-              border: '1px solid #ccc',
-              borderRadius: '6px',
-              backgroundColor: '#fff',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'stretch',
-            }}
-          >
-            <form onSubmit={handleSubmit} style={{ borderRadius: '16px' }}>
-              <div className="mb-3">
-                <label htmlFor="postTitle" className="form-label">Title</label>
-                <input
-                  type="text"
-                  id="postTitle"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  placeholder="Post Title"
-                  required
-                  className="form-control"
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="postBody" className="form-label">Content</label>
-                <textarea
-                  id="postBody"
-                  name="body"
-                  value={formData.body}
-                  onChange={handleInputChange}
-                  placeholder="Post Content"
-                  required
-                  rows="4"
-                  className="form-control"
-                />
-              </div>
-              {/* Hidden input for userId if needed for submission, or manage it in state */}
-              <input type="hidden" name="userId" value={formData.userId} />
-              <div>
-                <button
-                  type="submit"
-                  className="btn btn-dark me-2"
-                >
-                  {isEditing ? 'Update' : 'Add'} Post
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowForm(false);
-                    setFormData({ userId: 1, id: null, title: '', body: '' });
-                    setIsEditing(false);
-                  }}
-                  className="btn btn-secondary"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </Container>
-        )}
-      </Navbar>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={count}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={(_, newPage) => setPage(newPage)}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value));
+            setPage(0);
+          }}
+        />
 
-      <Box>
-        <Container sx={{ py: 4 }} className="mt-4">
-          <Typography variant="h6" gutterBottom>
-            Users List
-          </Typography>
-          <Paper sx={{ borderRadius: '20px' }} variant="elevation" elevation={3}>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>ID</TableCell>
-                    <TableCell>Title</TableCell>
-                    <TableCell>Body</TableCell>
-                    <TableCell>Action</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {paginatedPosts.length > 0 ? (
-                    paginatedPosts.map((post) => (
-                      <TableRow key={post.id}>
-                        <TableCell>{post.id}</TableCell>
-                        <TableCell>{post.title}</TableCell>
-                        <TableCell>{post.body}</TableCell>
-                        <TableCell>
-                          <Stack direction="row" spacing={1}>
-                            <button
-                              type="button"
-                              className="btn btn-outline-primary btn-sm p-1"
-                              onClick={() => handleEdit(post)}
-                              title="Edit"
-                            >
-                              <i className="bi bi-pencil"></i> EDIT
-                            </button>
-                            <button
-                              type="button"
-                              className="btn btn-outline-danger btn-sm p-1"
-                              onClick={() => handleDelete(post.id)}
-                              title="Delete"
-                            >
-                              <i className="bi bi-trash"></i> DELETE
-                            </button>
-                          </Stack>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={4} align="center">
-                        {posts.length === 0 ? 'Loading posts...' : 'No posts found.'}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-
-            <TablePagination
-              component="div"
-              count={posts.length}
-              page={page}
-              onPageChange={handleChangePage}
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              rowsPerPageOptions={[5, 10, 20, 50]}
-            />
-          </Paper>
-        </Container>
       </Box>
-    </>
+
+
+
+
+
+      <Box sx={{ mt: 3 }}>
+        <Box
+          sx={{
+            display: 'grid',
+            gap: 2,
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+          }}
+        >
+          {demoData.map((item, idx) => (
+            <Cards key={idx} {...item} />
+          ))}
+        </Box>
+      </Box>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{/* Alert Dialog */}
+<Dialog
+  open={alertOpen}
+  onClose={() => setAlertOpen(false)}
+  aria-labelledby="alert-dialog-title"
+  aria-describedby="alert-dialog-description"
+  PaperProps={{
+    style: {
+      minWidth: isMobile ? '280px' : '350px',
+      maxWidth: '90%',
+      textAlign: 'center',
+      position: 'absolute',
+      top: '15%',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      padding: isMobile ? '10px' : '16px',
+      borderRadius: '8px',
+      margin: 0,
+    },
+  }}
+>
+  <DialogTitle id="alert-dialog-title" style={{ textAlign: 'center' }}>
+    {alertTitle}
+  </DialogTitle>
+  <DialogContent>
+    <DialogContentText id="alert-dialog-description" style={{ textAlign: 'center' }}>
+      {alertMessage}
+    </DialogContentText>
+  </DialogContent>
+  <DialogActions style={{ justifyContent: 'center' }}>
+    <Button onClick={() => setAlertOpen(false)} color="primary" variant="contained">
+      OK
+    </Button>
+  </DialogActions>
+</Dialog>
+
+{/* Delete Confirmation Dialog */}
+<Dialog
+  open={confirmDeleteOpen}
+  onClose={() => setConfirmDeleteOpen(false)}
+  aria-labelledby="confirm-delete-dialog-title"
+  aria-describedby="confirm-delete-dialog-description"
+  PaperProps={{
+    style: {
+      minWidth: isMobile ? '280px' : '350px',
+      maxWidth: '90%',
+      textAlign: 'center',
+      position: 'absolute',
+      top: '15%', // Consistent top positioning
+      left: '50%',
+      transform: 'translateX(-50%)',
+      padding: isMobile ? '10px' : '16px',
+      borderRadius: '8px',
+      margin: 0,
+    },
+  }}
+>
+  <DialogTitle id="confirm-delete-dialog-title" style={{ textAlign: 'center' }}>
+    Confirm Delete
+  </DialogTitle>
+  <DialogContent>
+    <DialogContentText id="confirm-delete-dialog-description" style={{ textAlign: 'center' }}>
+      Are you sure you want to delete this post?
+    </DialogContentText>
+  </DialogContent>
+  <DialogActions style={{ justifyContent: 'center' }}>
+    <Button
+      onClick={() => setConfirmDeleteOpen(false)}
+      color="primary"
+      variant="contained"
+      style={{ marginRight: '10px' }} 
+    >
+      Cancel
+    </Button>
+    <Button
+      onClick={handleDelete}
+      color="error"
+      variant="contained"
+      autoFocus
+    >
+      Delete
+    </Button>
+  </DialogActions>
+</Dialog>
+    
+    </Container>
   );
 };
 

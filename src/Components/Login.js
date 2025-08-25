@@ -1,5 +1,5 @@
-// src/pages/Login.jsx
-import { useState } from 'react';
+
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -8,19 +8,25 @@ import {
   Paper,
   TextField,
   Typography,
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+} from "@mui/material";
+
+import { useNavigate } from "react-router-dom";
+
+const dummyUsers = [
+  { username: "admin", password: "123" },
+  { username: "mugesh", password: "345" },
+  { username: "mafrook", password: "567" },
+];
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
-
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(''); 
-
   const navigate = useNavigate();
+
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,23 +35,40 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
 
-    
-    setError('');
-    setSuccess('');
+    try {
+      const match = dummyUsers.find(
+        (user) =>
+          user.username === formData.email &&
+          user.password === formData.password
+      );
 
-    
-    if (formData.email === 'admin' && formData.password === '123') {
-      setSuccess('!!!!!!!Login success!!!!!!!!');
+      if (match) {
+        localStorage.setItem("currentUser", match.username);
 
+        const key = `usrdata_${match.username}`;
+        const preData = localStorage.getItem(key);
 
-       navigate('/UserTable'); 
-     
+        if (preData === null) {
+          console.log(`Creating new empty user: ${match.username}`);
 
-
-    } else {
-      setError('Invalid email or password. Please try again.');
+        } else {
+          console.log(`User: ${key} already data:${preData}`);
+        }
+          setSuccess('!!!!!!!Login success!!!!!!!!');
+        navigate("/UserTable");
+      } else {
+         setError('Invalid email or password. Please try again.');
+  
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Something went wrong during login. Please try again.");
     }
+
+   
   };
 
   return (
@@ -63,15 +86,15 @@ const Login = () => {
           sx={{
             padding: 4,
             borderRadius: 3,
-            width: '100%',
-            textAlign: 'center',
+            width: "100%",
+            textAlign: "center",
           }}
         >
           <Box mb={2}>
             <img
               src="/logo.svg"
               alt="Logo"
-              style={{ width: '120px', height: '120px', marginBottom: '16px' }}
+              style={{ width: "120px", height: "120px", marginBottom: "16px" }}
             />
             <Typography component="h1" variant="h5" fontWeight="600">
               Sign In
@@ -102,12 +125,16 @@ const Login = () => {
             />
 
             {error && (
-              <Typography color="error" variant="body2" align="center" sx={{ mt: 1 }}>
+              <Typography
+                color="error"
+                variant="body2"
+                align="center"
+                sx={{ mt: 1 }}
+              >
                 {error}
               </Typography>
             )}
 
-           
             {success && (
               <Typography
                 color="success.main"
@@ -132,7 +159,7 @@ const Login = () => {
               variant="body2"
               color="primary"
               align="center"
-              sx={{ cursor: 'pointer' }}
+              sx={{ cursor: "pointer" }}
             >
               Forgot password?
             </Typography>
@@ -140,8 +167,11 @@ const Login = () => {
         </Paper>
 
         <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
-          you don't have account?{' '}
-          <a href="/signup" style={{ color: '#1976d2', textDecoration: 'none' }}>
+          you don't have account?{" "}
+          <a
+            href="/signup"
+            style={{ color: "#1976d2", textDecoration: "none" }}
+          >
             Sign up
           </a>
         </Typography>

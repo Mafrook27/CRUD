@@ -1,0 +1,21 @@
+.MuiButtonBase-root.MuiTab-root.active-tab::before,
+.MuiButtonBase-root.MuiTab-root.active-tab::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 20px; /* Adjust size of curve */
+    height: 20px; /* Adjust size of curve */
+    background-color: [COLOR_OF_ELEMENT_BELOW_TABS]; /* Crucial: Match the color of the element *below* the tabs to blend */
+    border-radius: 10%; /* Creates a circle */
+    z-index: 1; /* Place below the active tab content but above the main background */
+}
+
+.MuiButtonBase-root.MuiTab-root.active-tab::before {
+    left: -10px; /* Adjust positioning */
+    transform: translate(0, 50%); /* Halfway out */
+}
+
+.MuiButtonBase-root.MuiTab-root.active-tab::after {
+    right: -10px; /* Adjust positioning */
+    transform: translate(0, 50%); /* Halfway out */
+}
