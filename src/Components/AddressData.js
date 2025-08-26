@@ -1,5 +1,5 @@
 import TableComponent from "./TableComponent";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Container,
   Typography,
@@ -9,7 +9,6 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { loadCities, fetchFilteredUsers, fetchDefaultUsers } from ".././Services/Service";
-
 const AddressData = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -65,16 +64,13 @@ const AddressData = () => {
           fetchedUsersByFilter.push(companyCityUsers);
         }
 
-        console.log("fetchuserbyfiter", fetchedUsersByFilter);
-
         let combinedUsers = [];
-
         if (fetchedUsersByFilter.length === 0) {
           combinedUsers = await fetchDefaultUsers();
         } else if (fetchedUsersByFilter.length === 1) {
-          combinedUsers = fetchedUsersByFilter[0];
+          combinedUsers = fetchedUsersByFilter;
         } else {
-          combinedUsers = fetchedUsersByFilter[0];
+          combinedUsers = fetchedUsersByFilter;
           for (let i = 1; i < fetchedUsersByFilter.length; i++) {
             const currentUsers = fetchedUsersByFilter[i];
             combinedUsers = combinedUsers.filter(user1 =>
@@ -94,25 +90,17 @@ const AddressData = () => {
     fetchAndCombineFilters();
   }, [searchAge, selectedPersonalCity, selectedCompanyCity]);
 
-
-console.log("all combined data :",overallFilteredUsers);
-
-
-
-
-  
-
-  
-  useEffect(() => {
+  // Memoize paginated users to avoid unnecessary re-renders
+  const paginatedUsers = useMemo(() => {
     const startIndex = page * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
-    const paginatedUsers = overallFilteredUsers.slice(startIndex, endIndex);
-    setUsers(paginatedUsers);
-    setTotal(overallFilteredUsers.length);
-    
+    return overallFilteredUsers.slice(startIndex, endIndex);
   }, [page, rowsPerPage, overallFilteredUsers]);
 
-  
+  useEffect(() => {
+    setUsers(paginatedUsers);
+    setTotal(overallFilteredUsers.length);
+  }, [paginatedUsers, overallFilteredUsers]);
 
   const handleAgeChange = (e) => {
     setSearchAge(e.target.value);
@@ -126,6 +114,13 @@ console.log("all combined data :",overallFilteredUsers);
 
   const handleCompanyCityChange = (event, newValue) => {
     setSelectedCompanyCity(newValue);
+    setPage(0);
+  };
+
+  // Updated handler: batch updates to avoid dropdown closing
+  const handleRowsPerPageChange = (e) => {
+    const newRowsPerPage = parseInt(e.target.value, 10);
+    setRowsPerPage(newRowsPerPage);
     setPage(0);
   };
 
@@ -191,11 +186,8 @@ console.log("all combined data :",overallFilteredUsers);
         count={total}
         rowsPerPage={rowsPerPage}
         page={page}
-       onPageChange={(_, newPage) => setPage(newPage)}
-          onRowsPerPageChange={(e) => {
-            setRowsPerPage(parseInt(e.target.value));
-            setPage(0);
-          }}
+        onPageChange={(_, newPage) => setPage(newPage)}
+        onRowsPerPageChange={handleRowsPerPageChange}
       />
     </Container>
   );
