@@ -52,6 +52,62 @@ const metricData = [
     },
   },
 
+  
+ {
+    title: 'Traffic by Device',
+    value: '65K',
+    change: '12.3%',
+    chartType: 'bar',
+    barOrientation: 'horizontal', 
+    showXAxis: true,
+    chartData: {
+      labels: ["Mon", "Tue", "Wed"],
+      datasets: [
+        { label: "Mobile", data: [10, 20, 30], backgroundColor: "#10B981" },
+        { label: "Desktop", data: [5, 15, 25], backgroundColor: "#3B82F6" }
+      ]
+    }
+  },
+   
+   {
+    title: 'Device Performance (Vertical)',
+    value: '85K',
+    change: '18.4%',
+    chartType: 'bar',
+    barOrientation: 'vertical',
+    showXAxis: true,
+    chartData: {
+      labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+      datasets: [
+        { label: "Mobile", data: [25, 35, 30, 40, 45], backgroundColor: "#10B981" },
+        { label: "Desktop", data: [20, 25, 35, 30, 40], backgroundColor: "#3B82F6" },
+        { label: "Tablet", data: [10, 15, 12, 18, 22], backgroundColor: "#F59E0B" }
+      ]
+    }
+  },
+
+ 
+  {
+    title: 'Device Performance (Horizontal)',
+    value: '92K',
+    change: '22.1%',
+    chartType: 'bar',
+    barOrientation: 'horizontal',
+    showXAxis: true,
+    chartData: {
+      labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+      datasets: [
+        { label: "Mobile", data: [25, 35,40, 45], backgroundColor: "#10B981" },
+        { label: "Desktop", data: [20, 25, 35, 30, 40], backgroundColor: "#3B82F6" },
+        { label: "Tablet", data: [10, 15, 12, 18, 22], backgroundColor: "#F59E0B" }
+      ]
+    }
+  }
+
+
+
+
+
 
 ];
 
@@ -107,6 +163,7 @@ const ChartDashboard = () => {
               value={metric.value}
               change={metric.change}
               chartType={metric.chartType}
+                 barOrientation={metric.barOrientation}
             
 
     showXAxis={metric.showXAxis}

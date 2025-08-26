@@ -60,7 +60,8 @@ const Navbar = () => {
     { text: "User Table", icon: <FaUsers />, path: "/UserTable" },
     { text: "Chart Dashboard", icon: <FaChartLine />, path: "/chartDashboard" },
     { text: "AddressData", icon: <FaAddressBook />, path: "/addressdata" },
-     { text: "Sample", icon: <FaAddressBook />, path: "/sample" }
+    // {text:"sample,", icon: <FaAddressBook />, path: "/sample" }
+
   ];
   function setupHistoryTrap() {
     window.history.pushState(null, document.title, window.location.href);
@@ -209,14 +210,11 @@ const Navbar = () => {
   );
 
   return (
-
 <Box sx={{ display: "flex", justifyContent: 'space-between' }}>
   <CssBaseline />
   <AppBar component="nav" sx={{ 
     boxShadow: "none !important",
-    // position: "relative",
-
-  
+    width: "100%",
     "&:after": {
       content: '""',
       position: "absolute",
@@ -233,19 +231,18 @@ const Navbar = () => {
         display: "flex",
         alignItems: "center",
         height: "64px",
-     justifyContent:{xs:'space-between',sm:'space-between'},
-         px: {  md: 'none' },
+        justifyContent: { xs: 'space-between', sm: 'space-between' },
+        px: { xs: 1, sm: 2 }, 
         pb: 0,
       }}
     >
-    
-    <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>
+      <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>
         <IconButton
           color="inherit"
           aria-label="open drawer"
           edge="start"
           onClick={handleDrawerToggle}
-          sx={{ mr: { xs: 1, sm: 2,md:1 }, p: 0 }}
+          sx={{ mr: { xs: 2, sm: 2, md: 1 ,lg:2.5}, pl: 2 }}
         >
           <MenuIcon />
         </IconButton>
@@ -255,7 +252,13 @@ const Navbar = () => {
           component="div"
           noWrap
           sx={{
-            fontSize: { xs: "18px", sm: "20px", md: "22px", lg:"24px" },
+            fontSize: { 
+              xs: "16px",
+              sm: "18px", 
+              md: "20px", 
+              lg: "24px", 
+              xl: "24px" 
+            },
             fontWeight: 550,
             letterSpacing: "0.4px",
           }}
@@ -264,104 +267,98 @@ const Navbar = () => {
         </Typography>
       </Box>
 
-    
       <Box
         sx={{
-          display: { xs: "none", md: "flex" },
+          display: { xs: "none", md: "flex" }, 
           alignItems: "center",
           justifyContent: "center",
           flexGrow: 1,
           flexShrink: 1,
-          minWidth: 0, 
-          mx: 2,
-         mt: 1,
-          
+          minWidth: 0,
+          mx: { md: 1, lg: 1 },
+          mt: 1,
         }}
       >
         {menuItems.map((item) => (
-         <Button
-  key={item.text}
-  component={Link}
-  to={item.path}
-  disableRipple // Disable ripple effect
-  disableFocusRipple // Disable focus ripple
-  disableTouchRipple // Disable touch ripple
-  sx={{
-    color: location.pathname === item.path ? "#1976d2" : "#ffffff",
-    fontSize: { md: "12px", lg: "13px", xl: "14px" },
-    textTransform: "uppercase",
-    fontWeight: 500,
-    letterSpacing: "0.5px",
-    px: { md: 1.5, lg: 2, xl: 2.5 },
-    py: location.pathname === item.path ? 1.8 : 1.5,
-    mx: { md: 0.25, lg: 0.5 },
-    minWidth: "auto",
-    whiteSpace: "nowrap",
-    pb:0.5,
-    backgroundColor: location.pathname === item.path ? "#ffffff" : "transparent",
-    borderRadius: location.pathname === item.path ? "0px 0px 0px 0px" : "0px",
-    position: "relative",
-    marginBottom: location.pathname === item.path ? "-1px" : "0px",
-    
-
-    transition: "all  linear",
-    
-    
-    "&:focus": {
-      outline: "none",
-      boxShadow: "none",
-    },
-    "&:active": {
-      backgroundColor: location.pathname === item.path ? "#ffffff" : "transparent",
-    },
-    "&:focus-visible": {
-      outline: "none",
-      boxShadow: "none",
-    },
-    
-  
-    "&:after": location.pathname === item.path ? {
-      content: '""',
-      position: "absolute",
-      // marignBottom:"10px",
-      bottom: "-8px",
-      left: 0,
-      right: 0,
-      height: "8px",
-      backgroundColor: "#ffffff",
-      zIndex: 10,
-      transition: "all 0.1s linear",
-    } : {
-      content: '""',
-      position: "absolute",
-      bottom: "-8px",
-      left: 0,
-      right: 0,
-      height: "8px",
-      backgroundColor: "transparent",
-      zIndex: 10,
-      transition: "all 0.1s  linear",
-    },
-    
-   
-    "& .MuiButton-startIcon": {
-      transition: "color 0.1s ease-in-out",
-      color: location.pathname === item.path ? "#1976d2" : "#ffffff",
-    },
-    
-  
-    "& .MuiButton-text": {
-      transition: "color 0.1s linear",
-    }
-  }}
-  startIcon={item.icon}
->
-  {item.text}
-</Button>
+          <Button
+            key={item.text}
+            component={Link}
+            to={item.path}
+            disableRipple
+            disableFocusRipple
+            disableTouchRipple
+            
+            sx={{
+              color: location.pathname === item.path ? "#1976d2" : "#ffffff",
+              fontSize: { 
+                md: "10px", 
+                lg: "14px", 
+                xl: "14px" 
+              },
+              textTransform: "uppercase",
+              fontWeight: 500,
+              letterSpacing: "0.5px",
+              px: { md: 1, lg: 1.5, xl: 2.5 },
+              py: location.pathname === item.path ? 1.8 : 1.5,
+              mx: { md: 0.2, lg: 0.25, xl: 0.5 },
+              minWidth: "auto",
+              whiteSpace: "nowrap",
+              pb: 0.5,
+              backgroundColor: location.pathname === item.path ? "#ffffff" : "transparent",
+              borderRadius: location.pathname === item.path ? "0px 0px 0px 0px" : "0px",
+              position: "relative",
+              // marginBottom: location.pathname === item.path ? "-1px" : "0px",
+              transition: "all linear",
+              "&:hover":{
+                backgroundColor:"rgba(179, 176, 176, 0.45), 176, 0)",
+              },
+              "&:focus": {
+                outline: "none",
+                boxShadow: "none",
+              },
+              "&:active": {
+                backgroundColor: location.pathname === item.path ? "#ffffff" : "transparent",
+              },
+              "&:focus-visible": {
+                outline: "none",
+                boxShadow: "none",
+              },
+              "&:after": location.pathname === item.path ? {
+                content: '""',
+                position: "absolute",
+                bottom: "-8px",
+                left: 0,
+                right: 0,
+                height: "8px",
+                backgroundColor: "#ffffff",
+                zIndex: 10,
+                transition: "all 0.1s linear",
+              } : {
+                content: '""',
+                position: "absolute",
+                bottom: "-8px",
+                left: 0,
+                right: 0,
+                height: "8px",
+                backgroundColor: "transparent",
+                zIndex: 10,
+                transition: "all 0.1s linear",
+              },
+              "& .MuiButton-startIcon": {
+                transition: "color 0.1s linear",
+                color: location.pathname === item.path ? "#1976d2" : "#ffffff",
+              },
+              "& .MuiButton-text": {
+                transition: "color 0.1s linear",
+              }
+            }}
+            startIcon={item.icon}
+          >
+            {item.text}
+          </Button>
         ))}
       </Box>
 
-     
       <Box sx={{ 
         display: { xs: 'none', sm: "none", md: "flex" }, 
         alignItems: "center", 
@@ -370,72 +367,68 @@ const Navbar = () => {
         flexShrink: 0, 
         flexBasis: "auto", 
       }}>
-        
-    
-       {showSearch ? (
-            <Box
+        {showSearch ? (
+          <Box
+            sx={{
+              backgroundColor: "rgba(255, 255, 255, 0.12)",
+              borderRadius: "25px",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+              padding: { md: "6px 12px", lg: "6px 16px" },
+              display: "flex",
+              alignItems: "center",
+              width: { 
+                md: "120px", 
+                lg: "185px", 
+                xl: "220px" 
+              },
+              flexShrink: 0,
+              transition: "all 0.3s ease",
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.18)",
+                border: "1px solid rgba(255, 255, 255, 0.3)",
+              },
+              "&:focus-within": {
+                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                border: "1px solid rgba(255, 255, 255, 0.4)",
+              },
+            }}
+          >
+            <SearchIcon sx={{ color: "rgba(255, 255, 255, 0.8)", mr: 1, fontSize: { md: 18, lg: 20 } }} />
+            <InputBase
+              placeholder="Search..."
+              inputProps={{ "aria-label": "search" }}
               sx={{
-                backgroundColor: "rgba(255, 255, 255, 0.12)",
-                borderRadius: "25px",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-                padding: "6px 16px",
-                display: "flex",
-                alignItems: "center",
-                width: { xs: "100px", sm: "120px", md: "180px", lg: "220px" },
-                flexShrink: 0,
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.18)",
-                  border: "1px solid rgba(255, 255, 255, 0.3)",
-                },
-                "&:focus-within": {
-                  backgroundColor: "rgba(255, 255, 255, 0.2)",
-                  border: "1px solid rgba(255, 255, 255, 0.4)",
+                color: "white",
+                width: "100%",
+                fontSize: { md: "12px", lg: "14px" },
+                "& ::placeholder": {
+                  color: "rgba(255, 255, 255, 0.7)",
+                  opacity: 1,
                 },
               }}
-            >
-              <SearchIcon sx={{ color: "rgba(255, 255, 255, 0.8)", mr: 1, fontSize: 20 }} />
-              <InputBase
-                placeholder="Search..."
-                inputProps={{ "aria-label": "search" }}
-                sx={{
-                  color: "white",
-                  width: "100%",
-                  "& ::placeholder": {
-                    color: "rgba(255, 255, 255, 0.7)",
-                    opacity: 1,
-                  },
-                }}
-                value={searchId}
-                onChange={(e) => dispatch(setSearchId(e.target.value))}
-              />
-            </Box>
-          ) : (
-          
-            <Box
-              sx={{
-               
-                display: "flex", 
-                alignItems: "center",
-                width: { xs: "100px", sm: "120px", md: "180px", lg: "220px" },
-                flexShrink: 0,
-                padding: "6px 16px", 
-               
-                backgroundColor: "transparent", 
-                border: "none", 
-                borderRadius: "0px", 
-                visibility: "hidden", 
-              }}
+              value={searchId}
+              onChange={(e) => dispatch(setSearchId(e.target.value))}
             />
-          )}
-
-
-
-
-
-
-
-
+          </Box>
+        ) : (
+          <Box
+            sx={{
+              display: "flex", 
+              alignItems: "center",
+              width: { 
+                md: "120px", 
+                lg: "185px", 
+                xl: "220px" 
+              },
+              flexShrink: 0,
+              padding: { md: "6px 12px", lg: "6px 16px" },
+              backgroundColor: "transparent", 
+              border: "none", 
+              borderRadius: "0px", 
+              visibility: "hidden", 
+            }}
+          />
+        )}
 
         <IconButton
           sx={{
@@ -460,7 +453,6 @@ const Navbar = () => {
       </Box>
 
 
-
 <Box sx= {{display:{xs:'flex', sm:"flex",md:"none"}}}>
 
 
@@ -468,6 +460,7 @@ const Navbar = () => {
           sx={{
             color: "white",
             p: 1.5,
+            pr:2 ,
             marginRight:"-12px",
             borderRadius: "50%",
             transition: "all 0.3s ease",

@@ -52,73 +52,112 @@ const ValueComponent = ({
   showXAxis = true,
   pieRadius = "90%",
   doughnutCutout = "60%",
+  barOrientation = "vertical",
 }) => {
-  // Determine if change is negative for color logic
+  
   const isNegative = Number(change?.replace("%", "") || 0) < 0;
   const chartColor = isNegative ? "#EF4444" : "#10B981";
 
-  // Check if the chart type is circular
+  
   const isCircular = ["pie", "doughnut", "polarArea"].includes(chartType);
 
-  // Prepare chart data
+
+  const indexAxis = chartType === "bar" 
+    ? (barOrientation === "horizontal" ? "y" : "x")
+    : "x";
+
+  
   const data = isCircular
     ? {
         labels: chartData?.labels || [],
-        datasets: [
-          {
-            data: chartData?.values || [],
-            backgroundColor: ["#10B981", "#3B82F6", "#F59E0B", "#EF4444"],
-            borderWidth: 1,
-          },
-        ],
+        datasets: chartData?.datasets
+          ? chartData.datasets
+          : [
+              {
+                data: chartData?.values || [],
+                backgroundColor: ["#10B981", "#3B82F6", "#F59E0B", "#EF4444"],
+                borderWidth: 1,
+              },
+            ],
       }
     : {
         labels: chartData?.labels || [],
-        datasets: [
-          {
-            label: title,
-            data: chartData?.values || [],
-            borderColor: "#1976D2", 
-            backgroundColor: chartType === "bar" ? "#1976D2" : "#1976D233", // Solid for bar, translucent for others
-            fill: chartType === "line",
-            tension: chartType === "line" ? 0.4 : 0,
-            pointRadius: 1,
-          },
-        ],
+        datasets: chartData?.datasets
+          ? chartData.datasets
+          : [
+              {
+                label: title,
+                data: chartData?.values || [],
+                borderColor: "#1976D2",
+                backgroundColor: chartType === "bar" ? "#1976D2" : "#1976D233",
+                fill: chartType === "line",
+                tension: chartType === "line" ? 0.4 : 0,
+                pointRadius: 1,
+              },
+            ],
       };
+
+  const hasData =
+    chartData &&
+    (
+      (chartData.values && Array.isArray(chartData.values) && chartData.values.length > 0) ||
+      (chartData.datasets && Array.isArray(chartData.datasets) && chartData.datasets.length > 0)
+    );
 
   // Chart options
   const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: { enabled: true },
-    },
-    scales: isCircular
-      ? {}
-      : {
-          x: {
-            display: showXAxis,
-            grid: { display: false },
-          },
-          y: {
-            display: false,
-            grid: { display: false },
-          },
+  indexAxis, // controls bar direction
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: { enabled: true },
+  },
+  scales: isCircular
+    ? {}
+    : chartType === "bar"
+    ? {
+        x: {
+          display: indexAxis === "x" ? showXAxis : true,
+          grid: { display: false },
+          ticks: { color: "#666", fontSize: 10 },
+          beginAtZero: true,
         },
-    radius: pieRadius,
-    cutout: chartType === "doughnut" ? doughnutCutout : undefined,
-    animation: false,
-  };
+        y: {
+          display: indexAxis === "y" ? showXAxis : false,
+          grid: { display: false },
+          ticks: { color: "#666", fontSize: 10 },
+        },
+      }
+    : {
+        x: {
+          display: showXAxis,
+          grid: { display: false },
+        },
+        y: {
+          display: false,
+          grid: { display: false },
+        },
+      },
 
+  
+  ...(chartType === "bar" && {
+    barPercentage: indexAxis === "x" ? 0.6 : 0.8,   // bar percent by thickness 
+    categoryPercentage: indexAxis === "x" ? 0.4 :0.3,  // catergory percent 
+    barThickness: undefined,
+  }),
+
+  radius: pieRadius,
+  cutout: chartType === "doughnut" ? doughnutCutout : undefined,
+  animation: false,
+  interaction: {
+    mode: chartType === "bar" ? "index" : "nearest",
+    intersect: false,
+  },
+};
+  // Render chart with fallback
   const renderChart = () => {
-    if (
-      !chartData ||
-      !chartData.values ||
-      !Array.isArray(chartData.values) ||
-      chartData.values.length === 0
-    ) {
+    if (!hasData) {
       return (
         <Box
           display="flex"
@@ -180,11 +219,7 @@ const ValueComponent = ({
           }}
         >
           {/* Value + Change */}
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="flex-start"
-          >
+          <Box display="flex" justifyContent="space-between" alignItems="flex-start">
             <Box>
               <Box display="flex" alignItems="center" gap={1} mb={0.5}>
                 <Typography
@@ -217,16 +252,12 @@ const ValueComponent = ({
                 component="p"
                 variant="body2"
                 sx={{ opacity: 0.8 }}
-                aria-label={`Title: ${title}||"title"`}
+                aria-label={`Title: ${title}`}
               >
                 {title}
               </Typography>
             </Box>
-            <IconButton
-              size="small"
-              sx={{ color: "text.primary", opacity: 0.6 }}
-              aria-label="More options"
-            >
+            <IconButton size="small" sx={{ color: "text.primary", opacity: 0.6 }} aria-label="More options">
               <MoreIcon size={16} />
             </IconButton>
           </Box>

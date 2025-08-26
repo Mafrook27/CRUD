@@ -1,5 +1,5 @@
 import { Suspense, lazy} from "react";
-import MainData from "./Components/MainDate";
+import MainData from "./Components/MainData";
 import Loader from "./Components/Loader";
 import Signup from "./Components/Signup";
 import Navbar from "./Components/Navbar";
@@ -40,7 +40,7 @@ function AppLayout() {
         </Routes>
       </Suspense>
     </div>
-  );
+  ); 
 }
 
 function App() {
