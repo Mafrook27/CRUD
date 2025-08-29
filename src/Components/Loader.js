@@ -11,7 +11,7 @@ const Loader = () => {
         top: 0,
         left: 0,
         backgroundColor:'rgba(163, 163, 163, 0.55)',
-        zIndex: 1000,
+        zIndex: 500,
       }}
     >
       <Spinner animation="border" role="status" variant="primary" />

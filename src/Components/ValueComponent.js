@@ -40,6 +40,11 @@ const ValueComponentStyled = styled(Card)(({ theme }) => ({
   flexDirection: "column",
   justifyContent: "space-between",
   boxShadow: theme.shadows[3],
+  [theme.breakpoints.down("sm")]: {
+    width: "90vw",
+    minWidth: "0",
+    maxWidth: "100%",
+  },
 }));
 
 const ValueComponent = ({
@@ -187,6 +192,7 @@ const ValueComponent = ({
         case "line":
         default:
           return <Line data={data} options={options} />;
+          
       }
     } catch (err) {
       console.error("Chart rendering error:", err);

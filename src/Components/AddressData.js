@@ -1,5 +1,6 @@
 import TableComponent from "./TableComponent";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react"; 
+import './Css/nav.css';
 import {
   Container,
   Typography,
@@ -138,7 +139,8 @@ const AddressData = () => {
         Address List
       </Typography>
 
-      <Box sx={{ display: "flex", gap: 2, mb: 2, flexWrap: "wrap" }}>
+      <Box   className="custom-flex-box "   sx={{ display: "flex", gap: 2, mb: 2, flexWrap: "wrap" }}>
+       <Box className="age-input">
         <TextField
           label="Age"
           type="number"
@@ -146,7 +148,7 @@ const AddressData = () => {
           onChange={handleAgeChange}
           size="small"
           sx={{ minWidth: 120 }}
-        />
+        /> </Box>
 
         <Autocomplete
           disablePortal

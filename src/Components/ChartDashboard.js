@@ -3,7 +3,7 @@ import { FaFacebookF, FaTwitter, FaLinkedinIn, FaCalendarAlt } from 'react-icons
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ValueComponent from './ValueComponent';
 import SocialMediaGraph from './SocialMediaGraph';
-
+import "./Css/nav.css";
 
 const metricData = [
   {
@@ -147,13 +147,13 @@ const socialData = [
 
 const ChartDashboard = () => {
   return (
-    <Box sx={{ p: 3, backgroundColor: '#ffffff', minHeight: '100vh' }}>
-      <Box sx={{ maxWidth: '1200px', mx: 'auto', display: 'flex', flexDirection: 'column', gap: "24px" ,alignItems: "center"}}>
+    <Box sx={{ p: { xs: 1, sm: 2, md: 3 },pt:{xs:2,sm:2}, backgroundColor: '#ffffff', minHeight: '100vh' }} className="page">
+  <Box sx={{ maxWidth: '1200px', mx: 'auto', display: 'flex', flexDirection: 'column', gap: "24px" ,alignItems: "center"}}>
         {/* Main container */}
         <Box sx={{ 
           display: 'grid', 
           gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, 
-          gap: "24px",
+          gap: { xs: "12px", sm: "16px", md: "24px" }, 
           justifyContent: 'center' 
         }}>
           {metricData.map((metric, idx) => (
@@ -176,7 +176,7 @@ const ChartDashboard = () => {
         <Box sx={{ 
           display: 'grid', 
           gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, 
-          gap: "24px",
+           gap: { xs: "12px", sm: "16px", md: "24px" }, 
           justifyContent: 'center'  
         }}>
           {socialData.map((social, idx) => (

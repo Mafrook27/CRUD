@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useMediaQuery } from '@mui/material';
+import "./Css/nav.css";
 import {
   Typography,
   Box,
@@ -192,7 +193,7 @@ const isMobile = useMediaQuery('(max-width:600px)');
 
   return (
 
-    <Container sx={{ py: 4 }}>
+    <Container sx={{ py: 4 } } className="page">
       <Typography variant="h6" gutterBottom>
         Users List
       </Typography>

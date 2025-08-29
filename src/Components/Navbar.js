@@ -1,26 +1,26 @@
 import { useState } from "react";
-
 import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setSearchId, setShowForm } from "../Redux/actions";
 import { useNavigate } from "react-router-dom";
 import {
-  AppBar,
   Box,
   Button,
-  CssBaseline,
   Divider,
   Drawer,
   IconButton,
-  InputBase,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
-  Toolbar,
   Typography,
   ListItemIcon,
 } from "@mui/material";
+import {
+
+  Container as BContainer,
+  Button as BButton,
+} from "react-bootstrap";
 import {
   FaDatabase,
   FaUsers,
@@ -28,11 +28,12 @@ import {
   FaPlus,
   FaSignOutAlt,
   FaTimes,
+  FaBars,
   FaAddressBook,
 } from "react-icons/fa";
 import SearchIcon from "@mui/icons-material/Search";
-import MenuIcon from "@mui/icons-material/Menu";
 
+import "./Css/nav.css";
 const drawerWidth = 240;
 
 const Navbar = () => {
@@ -60,17 +61,16 @@ const Navbar = () => {
     { text: "User Table", icon: <FaUsers />, path: "/UserTable" },
     { text: "Chart Dashboard", icon: <FaChartLine />, path: "/chartDashboard" },
     { text: "AddressData", icon: <FaAddressBook />, path: "/addressdata" },
-    // {text:"sample,", icon: <FaAddressBook />, path: "/sample" }
-
   ];
+
   function setupHistoryTrap() {
     window.history.pushState(null, document.title, window.location.href);
-
     window.addEventListener("popstate", function (event) {
       event.preventDefault();
-      window.history.pushState(null, document.title, window.location.href); //login
+      window.history.pushState(null, document.title, window.location.href);
     });
   }
+
   const drawer = (
     <Box
       onClick={handleDrawerToggle}
@@ -80,9 +80,10 @@ const Navbar = () => {
         height: "100%",
         display: "flex",
         flexDirection: "column",
+        
       }}
-    >
-      <Box sx={{ position: "absolute", top: 10, right: 8 }}>
+    >  
+      <Box sx={{ position: "absolute", top: 8, right: 8 }}>
         <IconButton
           color="primary"
           onClick={(e) => {
@@ -95,7 +96,7 @@ const Navbar = () => {
         </IconButton>
       </Box>
 
-      <Typography variant="h6" sx={{ my: 2, p: 1 }}>
+      <Typography variant="h6" sx={{ my: 1.5, p: 0.5, fontSize: "1.1rem" }}>
         User Dashboard
       </Typography>
       <Divider />
@@ -111,7 +112,7 @@ const Navbar = () => {
         }}
       >
         <Box>
-          <List>
+          <List sx={{ py: 1 }}>
             {menuItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
@@ -125,6 +126,7 @@ const Navbar = () => {
                     to={item.path}
                     sx={{
                       borderRadius: 1,
+                      py: 1,
                       "&:hover": {
                         backgroundColor: "rgba(255,255,255,0.12)",
                       },
@@ -138,8 +140,7 @@ const Navbar = () => {
                         display: "flex",
                         alignItems: "center",
                         width: "100%",
-
-                        paddingBottom: "2px",
+                        py: 0.5,
                       }}
                     >
                       <ListItemIcon
@@ -147,6 +148,7 @@ const Navbar = () => {
                           color: "#240202ff",
                           minWidth: "auto",
                           marginRight: 1,
+                          fontSize: "16px",
                         }}
                       >
                         {item.icon}
@@ -156,6 +158,7 @@ const Navbar = () => {
                         primaryTypographyProps={{
                           fontWeight: "normal",
                           color: "#080808ff",
+                          fontSize: "0.9rem",
                         }}
                       />
                     </Box>
@@ -167,7 +170,7 @@ const Navbar = () => {
 
           {showAddPostButton && (
             <>
-              <Divider sx={{ my: 2 }} />
+              <Divider sx={{ my: 1.5 }} />
               <Box sx={{ px: 2 }}>
                 <Button
                   fullWidth
@@ -175,6 +178,8 @@ const Navbar = () => {
                   color="primary"
                   onClick={handleAddPostClick}
                   startIcon={<FaPlus />}
+                  size="small"
+                  sx={{ py: 1, fontSize: "0.85rem" }}
                 >
                   Add New Post
                 </Button>
@@ -187,7 +192,7 @@ const Navbar = () => {
           sx={{
             px: 2,
             pb: 2,
-            marginTop: "100px",
+            marginTop: "80px",
             width: "100%",
           }}
         >
@@ -197,10 +202,11 @@ const Navbar = () => {
             color="error"
             onClick={() => {
               navigate("/login", { replace: true });
-
               setupHistoryTrap();
             }}
             startIcon={<FaSignOutAlt />}
+            size="small"
+            sx={{ py: 1, fontSize: "0.85rem" }}
           >
             LOGOUT
           </Button>
@@ -210,315 +216,258 @@ const Navbar = () => {
   );
 
   return (
-<Box sx={{ display: "flex", justifyContent: 'space-between' }}>
-  <CssBaseline />
-  <AppBar component="nav" sx={{ 
-    boxShadow: "none !important",
-    width: "100%",
-    "&:after": {
-      content: '""',
-      position: "absolute",
-      bottom: 0,
-      left: 0,
-      right: 0,
-      height: "1px",
-      backgroundColor: "rgba(255, 255, 255, 0.2)",
-      zIndex: 1,
-    }
-  }}>
-    <Toolbar
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        height: "64px",
-        justifyContent: { xs: 'space-between', sm: 'space-between' },
-        px: { xs: 1, sm: 2 }, 
-        pb: 0,
-      }}
-    >
-      <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          edge="start"
-          onClick={handleDrawerToggle}
-          sx={{ mr: { xs: 2, sm: 2, md: 1 ,lg:2.5}, pl: 2 }}
-        >
-          <MenuIcon />
-        </IconButton>
+    <>  
+  
+    {/*------------- main container--------- */}
 
-        <Typography
-          variant="h6"
-          component="div"
-          noWrap
-          sx={{
-            fontSize: { 
-              xs: "16px",
-              sm: "18px", 
-              md: "20px", 
-              lg: "24px", 
-              xl: "24px" 
-            },
-            fontWeight: 550,
-            letterSpacing: "0.4px",
-          }}
-        >
-          User Dashboard
-        </Typography>
-      </Box>
-
-      <Box
-        sx={{
-          display: { xs: "none", md: "flex" }, 
-          alignItems: "center",
-          justifyContent: "center",
-          flexGrow: 1,
-          flexShrink: 1,
-          minWidth: 0,
-          mx: { md: 1, lg: 1 },
-          mt: 1,
-        }}
-      >
-        {menuItems.map((item) => (
-          <Button
-            key={item.text}
-            component={Link}
-            to={item.path}
-            disableRipple
-            disableFocusRipple
-            disableTouchRipple
-            
-            sx={{
-              color: location.pathname === item.path ? "#1976d2" : "#ffffff",
-              fontSize: { 
-                md: "10px", 
-                lg: "14px", 
-                xl: "14px" 
-              },
-              textTransform: "uppercase",
-              fontWeight: 500,
-              letterSpacing: "0.5px",
-              px: { md: 1, lg: 1.5, xl: 2.5 },
-              py: location.pathname === item.path ? 1.8 : 1.5,
-              mx: { md: 0.2, lg: 0.25, xl: 0.5 },
-              minWidth: "auto",
-              whiteSpace: "nowrap",
-              pb: 0.5,
-              backgroundColor: location.pathname === item.path ? "#ffffff" : "transparent",
-              borderRadius: location.pathname === item.path ? "0px 0px 0px 0px" : "0px",
-              position: "relative",
-              // marginBottom: location.pathname === item.path ? "-1px" : "0px",
-              transition: "all linear",
-              "&:hover":{
-                backgroundColor:"rgba(179, 176, 176, 0.45), 176, 0)",
-              },
-              "&:focus": {
-                outline: "none",
-                boxShadow: "none",
-              },
-              "&:active": {
-                backgroundColor: location.pathname === item.path ? "#ffffff" : "transparent",
-              },
-              "&:focus-visible": {
-                outline: "none",
-                boxShadow: "none",
-              },
-              "&:after": location.pathname === item.path ? {
-                content: '""',
-                position: "absolute",
-                bottom: "-8px",
-                left: 0,
-                right: 0,
-                height: "8px",
-                backgroundColor: "#ffffff",
-                zIndex: 10,
-                transition: "all 0.1s linear",
-              } : {
-                content: '""',
-                position: "absolute",
-                bottom: "-8px",
-                left: 0,
-                right: 0,
-                height: "8px",
-                backgroundColor: "transparent",
-                zIndex: 10,
-                transition: "all 0.1s linear",
-              },
-              "& .MuiButton-startIcon": {
-                transition: "color 0.1s linear",
-                color: location.pathname === item.path ? "#1976d2" : "#ffffff",
-              },
-              "& .MuiButton-text": {
-                transition: "color 0.1s linear",
-              }
-            }}
-            startIcon={item.icon}
-          >
-            {item.text}
-          </Button>
-        ))}
-      </Box>
-
-      <Box sx={{ 
-        display: { xs: 'none', sm: "none", md: "flex" }, 
-        alignItems: "center", 
-        gap: { xs: 1, sm: 2 },
-        flexGrow: 0,
-        flexShrink: 0, 
-        flexBasis: "auto", 
-      }}>
-        {showSearch ? (
-          <Box
-            sx={{
-              backgroundColor: "rgba(255, 255, 255, 0.12)",
-              borderRadius: "25px",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
-              padding: { md: "6px 12px", lg: "6px 16px" },
-              display: "flex",
-              alignItems: "center",
-              width: { 
-                md: "120px", 
-                lg: "185px", 
-                xl: "220px" 
-              },
-              flexShrink: 0,
-              transition: "all 0.3s ease",
-              "&:hover": {
-                backgroundColor: "rgba(255, 255, 255, 0.18)",
-                border: "1px solid rgba(255, 255, 255, 0.3)",
-              },
-              "&:focus-within": {
-                backgroundColor: "rgba(255, 255, 255, 0.2)",
-                border: "1px solid rgba(255, 255, 255, 0.4)",
-              },
-            }}
-          >
-            <SearchIcon sx={{ color: "rgba(255, 255, 255, 0.8)", mr: 1, fontSize: { md: 18, lg: 20 } }} />
-            <InputBase
-              placeholder="Search..."
-              inputProps={{ "aria-label": "search" }}
-              sx={{
-                color: "white",
-                width: "100%",
-                fontSize: { md: "12px", lg: "14px" },
-                "& ::placeholder": {
-                  color: "rgba(255, 255, 255, 0.7)",
-                  opacity: 1,
-                },
-              }}
-              value={searchId}
-              onChange={(e) => dispatch(setSearchId(e.target.value))}
-            />
-          </Box>
-        ) : (
-          <Box
-            sx={{
-              display: "flex", 
-              alignItems: "center",
-              width: { 
-                md: "120px", 
-                lg: "185px", 
-                xl: "220px" 
-              },
-              flexShrink: 0,
-              padding: { md: "6px 12px", lg: "6px 16px" },
-              backgroundColor: "transparent", 
-              border: "none", 
-              borderRadius: "0px", 
-              visibility: "hidden", 
-            }}
-          />
-        )}
-
-        <IconButton
-          sx={{
-            color: "white",
-            p: 1.5,
-            marginRight: "-12px",
-            borderRadius: "50%",
-            flexShrink: 0,
-            transition: "all 0.3s ease",
-            "&:hover": {
-              backgroundColor: "rgba(255, 255, 255, 0.1)",
-              transform: "scale(1.05)",
-            },
-          }}
-          onClick={() => {
-            navigate("/login", { replace: true });
-            setupHistoryTrap();
-          }}
-        >
-          <FaSignOutAlt size={18} />
-        </IconButton>
-      </Box>
-
-
-<Box sx= {{display:{xs:'flex', sm:"flex",md:"none"}}}>
-
-
-         <IconButton
-          sx={{
-            color: "white",
-            p: 1.5,
-            pr:2 ,
-            marginRight:"-12px",
-            borderRadius: "50%",
-            transition: "all 0.3s ease",
-            "&:hover": {
-              backgroundColor: "rgba(255, 255, 255, 0.1)",
-              transform: "scale(1.05)",
-            },
-          }}
-          onClick={() => {
-            navigate("/login", { replace: true });
-            setupHistoryTrap();
-          }}
-        >
-          <FaSignOutAlt size={18} />
-        </IconButton>
-      </Box>
-
-
-
-
-
-
-    </Toolbar>
-  </AppBar>
-
-
-
-      {/* Mobile Drawer */}
-      <Box component="nav">
-      <Drawer
-  elevation={2}
-  variant="temporary"
-  open={mobileOpen}
-  onClose={handleDrawerToggle}
-  ModalProps={{ keepMounted: true }}
-  sx={{
-    "& .MuiDrawer-paper": {
-      height: "95%",
-      width: drawerWidth,   
-      borderRadius: "30px", 
-      boxSizing: "border-box",
-      overflowX:'hidden',
-      marginLeft: "1.5%",
-      margin: {md:"1% 1% !important",sm:"3% 3% !important",xs:"3% 3% !important"},
-        
-     
-     
-    },
+ <BContainer 
+  fluid 
+  className=" d-flex flex-row justify-content-between align-items-center flex-nowrap cus-toolbar"
+  style={{ 
+    backgroundColor: '#1976d2',
+    maxWidth: "100%",
+    minWidth: "100%",
+    height: "60px",
+    minHeight: "52px",
+    // zIndex: 1000,
+    // position:'fixed',
+    
   }}
 >
-  {drawer}
-</Drawer>
-      </Box>
+        
+            
+ {/*-------------- menu + typo------------*/}
+ <div
+              className="d-flex align-items-center .left-container"
+              style={{
+                minWidth: 0,
+                flex: '0 0 auto',
+                // border:"1px solid yellow",
+              }}
+            >
+              <button
+                type="button"
+                className="btn btn-link p-0 me-2 IconButton icon"
+                aria-label="Open drawer"
+                onClick={handleDrawerToggle}
+                style={{
+                  color: 'white',
+                  fontSize: window.innerWidth < 576 ? '20px' :
+                    window.innerWidth < 768 ? '22px' :
+                      window.innerWidth < 992 ? '24px' : '26px',
+                  textDecoration: 'none',
+                  boxShadow: 'none'
+                }}
+              >
+                <FaBars size={15}  className="icon" style={{marginBottom:"5px"}}/>
+              </button>
+              <span
+                className="navbar-brand text-white fw-small mb-0 flex-shrink-0 typo-container"
+                style={{
+                  fontSize:  ' 20px' ,
+                    
+                  fontWeight: 550,
+                  letterSpacing: '0.1px',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                User Dashboard
+              </span>
+            </div>
+            {/* ==============================center container ============================= */}
+            <div
+              className="d-none d-md-flex justify-content-center flex-grow-auto align-items-center h-100 mx-2  tab-conatiner"
+              style={{
+                // border:"1px solid black",
+                gap: window.innerWidth >= 992 ? '12px' : '8px',
+                height: '100%',
+               }}
+            >
+              {menuItems.map((item) => (
+                <BButton
+                  key={item.text}
+                  as={Link}
+                  to={item.path}
+                  className="text-uppercase d-flex align-items-center"
+                  style={{
+                    gap: '6px',
+                    borderRadius: '0px',
+                    height:location.pathname === item.path ? '62px' :'100%',
+                    paddingLeft: '12px',
+                    paddingRight: '12px',
+                    paddingTop: '10px',
+                    paddingBottom: '6px',
+                    letterSpacing: '0.4px',
+                    border: location.pathname === item.path ? '#ffffff' : '#1976d2',
+                    color: location.pathname === item.path ? '#1976d2' : '#ffffff',
+                    backgroundColor: location.pathname === item.path ? '#ffffff' : '#1976d2',
+                    fontWeight: 500,
+                    fontSize: '12px',
+                    minWidth: 'auto',
+                    whiteSpace: 'nowrap',
+                    // border: 'none',
+                    outline: 'none !important',
+                    boxShadow: 'none !important'
+                  }}
+                >
+                  {item.icon && (
+                    <span
+                      className="d-flex align-items-center"
+                      style={{ fontSize: '14px' }}
+                    >
+                      {item.icon}
+                    </span>
+                  )}
+                  <span style={{ marginLeft: item.icon ? '3px' : 0 }}>
+                    {item.text}
+                  </span>
+                </BButton>
+              ))}
+            </div>
 
-    <Box component="main" sx={{ p: 0, mr: mobileOpen ? 0 : 5 }}>
-        <Toolbar />
-      </Box>
-    </Box>
+
+
+            {/*========= search + exit========== */}
+            <div
+              className="d-none d-md-flex align-items-center  bg-yellow tab-conatiner"
+              style={{
+                gap: window.innerWidth >= 576 ? '12px' : '4px',
+                flex: '0 0 auto'
+              }}
+            >
+              {showSearch ? (
+                <div
+                  className="d-flex align-items-center"
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                    borderRadius: '20px',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    padding: window.innerWidth >= 992 ? '6px 14px' : '4px 10px',
+                    width: window.innerWidth >= 1200 ? '200px' :
+                      window.innerWidth >= 992 ? '160px' : '100px',
+                    transition: 'all 0.3s ease'
+                  }}
+                >
+                  <SearchIcon
+                    style={{
+                      color: 'rgba(255, 255, 255, 0.8)',
+                      marginRight: '6px',
+                      fontSize: window.innerWidth >= 992 ? '18px' : '16px'
+                    }}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    className="border-0 bg-transparent text-white w-100"
+                    style={{
+                      outline: 'none',
+                      fontSize: window.innerWidth >= 992 ? '13px' : '11px'
+                    }}
+                    value={searchId}
+                    onChange={(e) => dispatch(setSearchId(e.target.value))}
+                  />
+                </div>
+              ) : (
+                <div
+                  style={{
+                    width: window.innerWidth >= 1200 ? '200px' :
+                      window.innerWidth >= 992 ? '160px' : '100px',
+                    padding: window.innerWidth >= 992 ? '6px 14px' : '4px 10px',
+                    visibility: 'hidden'
+                  }}
+                />
+              )}
+              <button
+                className="btn btn-link p-0 me-2 IconButton "
+               
+              onClick={() => {
+                  navigate("/login", { replace: true });
+                  setupHistoryTrap();
+                }}
+                 style={{
+                  color: 'white',
+                  fontSize: window.innerWidth < 576 ? '20px' :
+                    window.innerWidth < 768 ? '22px' :
+                      window.innerWidth < 992 ? '24px' : '26px',
+                  textDecoration: 'none',
+                  boxShadow: 'none'
+                }}
+              >
+                <FaSignOutAlt size={15} style={{marginBottom:"5px"}}/>
+              </button>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+            {/* =======moblie exit container======== */}
+            <div className="d-md-none right-side-icon">
+              <button
+                className="btn btn-link p-0 me-2"
+               
+              onClick={() => {
+                  navigate("/login", { replace: true });
+                  setupHistoryTrap();
+                }}
+                 style={{
+                  color: 'white',
+                  fontSize: window.innerWidth < 576 ? '20px' :
+                    window.innerWidth < 768 ? '22px' :
+                      window.innerWidth < 992 ? '24px' : '26px',
+                  textDecoration: 'none',
+                  boxShadow: 'none'
+                }}
+              >
+                <FaSignOutAlt size={15} style={{marginBottom:"5px"}}/>
+              </button>
+            </div>
+          </BContainer>
+       
+   
+
+
+
+
+
+
+        <Box component="nav" >
+          <Drawer
+            elevation={2}
+            variant="temporary"
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{ keepMounted: true }}
+            sx={{
+            
+              "& .MuiDrawer-paper": {
+                height: "95%",
+                width: drawerWidth,
+                borderRadius: "30px",
+                boxSizing: "border-box",
+                overflowX: "hidden",
+                marginLeft: "1.5%",
+                margin: {
+                  md: "1% 1% !important",
+                  sm: "3% 3% !important",
+                  xs: "3% 3% !important",
+                },
+               zIndex: "4500 !important",
+              },
+            }}
+          >
+            {drawer}
+          </Drawer>
+        </Box>
+
+    </>
   );
 };
 

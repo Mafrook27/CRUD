@@ -1,5 +1,4 @@
-
-
+import "./Css/nav.css";
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Container, Typography,Box,InputBase } from '@mui/material';
@@ -48,7 +47,7 @@ const MainData = () => {
   ];
 
   return (
-    <Container sx={{ py: 4 }}>
+    <Container sx={{ py: 4  }} className="page">
      
      <Box sx={{display:'flex', alignItems: 'center',justifyContent:'space-between', marginBottom:'25px'}}>
       <Typography variant="h6" gutterBottom>

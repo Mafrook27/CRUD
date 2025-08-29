@@ -10,6 +10,12 @@ const SocialMediaGraphStyled = styled(Card)(({ theme }) => ({
   width:"280px",
   display: 'flex',
   flexDirection: 'column',
+[theme.breakpoints.down("sm")]: {
+    width: "90vw",
+    minWidth: "0",
+    maxWidth: "100%",
+  },
+
   boxShadow: theme.shadows[3],
 }));
 
